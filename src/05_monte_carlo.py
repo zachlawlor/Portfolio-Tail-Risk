@@ -107,6 +107,8 @@ print("\n" + "-" * 60 + "\n")
 print(df_compare.round(4).to_string(index = False))
 print("\n" + "-" * 60)
 
+plt.style.use("seaborn-v0_8")  # Plot style
+
 plt.figure(figsize = (10, 6)) # Plot 1: Distribution of simulated daily returns 
 plt.hist(simulated_returns * 100, bins = 60, color = "blue", alpha = 0.7, edgecolor = "black", linewidth = 0.3)
 plt.axvline(bootstrap_var_95 * 100, color = "orange", linestyle = "--", linewidth = 2, label = f"95% VaR: {bootstrap_var_95:.2%}")

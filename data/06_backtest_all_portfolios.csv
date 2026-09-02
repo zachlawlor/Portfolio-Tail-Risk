@@ -1,0 +1,26 @@
+Portfolio,Year,Days,Historical 99,Normal 99,Student-t 99
+Equal Weight,2021,252,2,3,3
+Equal Weight,2022,251,9,19,18
+Equal Weight,2023,250,2,3,1
+Equal Weight,2024,252,3,4,0
+Equal Weight,2025,249,2,5,2
+Classic 60/40,2021,252,0,2,0
+Classic 60/40,2022,251,7,14,3
+Classic 60/40,2023,250,0,1,0
+Classic 60/40,2024,252,1,1,1
+Classic 60/40,2025,249,4,4,3
+Risk Parity,2021,252,4,6,0
+Risk Parity,2022,251,15,17,1
+Risk Parity,2023,250,1,6,3
+Risk Parity,2024,252,4,5,4
+Risk Parity,2025,249,2,2,2
+Aggressive Growth,2021,252,0,0,0
+Aggressive Growth,2022,251,8,13,8
+Aggressive Growth,2023,250,0,0,0
+Aggressive Growth,2024,252,1,2,1
+Aggressive Growth,2025,249,3,3,3
+Conservative Income,2021,252,5,5,3
+Conservative Income,2022,251,28,28,25
+Conservative Income,2023,250,6,11,6
+Conservative Income,2024,252,5,7,5
+Conservative Income,2025,249,2,2,0
