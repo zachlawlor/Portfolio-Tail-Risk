@@ -59,6 +59,8 @@ print("-" * 60 + "\n")
 print(df_compare.round(4).to_string(index = False),"\n")
 print("-" * 60)
 
+plt.style.use("seaborn-v0_8")  # Plot style
+
 plt.figure(figsize = (10, 6)) # Plotting the ES & Var on a histogram 
 plt.hist(port1_log_returns * 100, bins = 60, color = "blue", alpha = 0.7, edgecolor = "black", linewidth = 0.3)
 plt.axvline(var_95 * 100, color = "red", linestyle = "--", linewidth = 2, label = f"95% VaR: {var_95:.2%}")

@@ -104,6 +104,8 @@ print("\n" + "-" * 60)
 x = np.linspace(port1_log_returns.min() * 100, port1_log_returns.max() * 100, 100) 
 y_t = t.pdf(x / 100, df, loc, scale) * 100
 
+plt.style.use("seaborn-v0_8")  # Plot style
+
 plt.figure(figsize = (10, 6)) # Plot 1: Showing Student-t distribution Var vs Historical
 plt.hist(port1_log_returns * 100, bins = 60, density = True, color = "blue", alpha = 0.7, edgecolor = "black", linewidth = 0.3)
 plt.fill_between(x, 0, y_t, color = "green", alpha = 0.15, label = "Student-t Density")
