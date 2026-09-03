@@ -95,6 +95,8 @@ To reproduce the full analysis from scratch, run **Phases 01–07 in order** bef
 
 A full technical report accompanies the project, covering the detailed methodology, mathematical framework, results, interpretation, limitations and references.
 
+[View the Full Technical Report](docs/Portfolio%20Tail-Risk%20Report.pdf)
+
 ## Project Structure
 
 ```text
@@ -125,4 +127,5 @@ Portfolio-Tail-Risk/
 
 **Zach Lawlor**  
 Email: zach6lawlor@gmail.com
-Linkedln: LinkedIn: [zachlawlor](https://www.linkedin.com/in/zachlawlor/)
+LinkedIn: [zachlawlor](https://www.linkedin.com/in/zachlawlor)
+Github: [zachlawlor](https://github.com/zachlawlor)
