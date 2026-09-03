@@ -31,8 +31,8 @@ portfolio_log_returns = {}
 for name, weights in portfolios.items(): # Looping through all 5 portfolio types & multiplying the assets by the correct weights for each
     port_ret = 0
     for asset in weights:
-        port_ret += log_returns[asset] * weights[asset]  
-    portfolio_log_returns[name] = port_ret
+        port_ret += (np.exp(log_returns[asset]) * weights[asset])  
+    portfolio_log_returns[name] = np.log(port_ret)
 
 port1_log_returns = portfolio_log_returns["Equal Weight"] # Extract the main one (Equal Weight) for analysis - Port 1
 
@@ -70,7 +70,7 @@ for name, weights in portfolios.items(): # Repeats same as above but loops throu
         "Annual Drift": comp_annual_drift,
         "Volatility": comp_vol,
         "Sharpe": comp_sharpe,
-        "Max DD": comp_max_dd.min(),
+        "Max DD": abs(comp_max_dd.min()),
         "Total Return": comp_total_return,
         "CAGR": comp_cagr,
         "Skewness": comp_skewness,
@@ -92,7 +92,7 @@ print(f"\nAnnualized Drift:                  {annual_drift:>15.2%}") # Print ana
 print(f"Annualised Compounded Growth Rate: {annual_growth:>15.2%}")
 print(f"Annualized Volatility:             {annual_volatility:>15.2%}")
 print(f"Sharpe Ratio:                      {sharpe_ratio:>15.2f}")
-print(f"Maximum Drawdown:                  {max_drawdown:>15.2%}")
+print(f"Maximum Drawdown:                  {abs(max_drawdown):>15.2%}")
 print(f"Total Return:                      {total_return:>15.2%}")
 print(f"Skewness:                          {skewness:>15.2f}")
 print(f"Kurtosis:                          {kurtosis:>15.2f}\n")
@@ -119,13 +119,13 @@ plt.savefig("outputs/01_portfolio_growth.png", dpi = 150, bbox_inches = "tight")
 plt.show()
 
 plt.figure(figsize = (10, 6)) # Plot 2 showing portfolio drawdown of equal weight portfolio
-plt.fill_between(drawdown.index, 0, drawdown, color = "red", alpha = 0.4, label = "Drawdown")
-plt.plot(drawdown.index, drawdown, color = "red", linewidth = 1, alpha = 0.8)
+plt.fill_between(drawdown.index, 0, abs(drawdown), color = "red", alpha = 0.4, label = "Drawdown")
+plt.plot(drawdown.index, abs(drawdown), color = "red", linewidth = 1, alpha = 0.8)
 plt.axhline(y = 0, color = "black", linewidth = 0.8)
 plt.title("Equal Weight Portfolio Drawdown from Peak", fontsize = 14, fontweight = "bold")
 plt.xlabel("Date", fontweight = "bold")
 plt.ylabel("Drawdown", fontweight = "bold")
-plt.legend(loc = "lower left")
+plt.legend(loc = "upper left")
 plt.grid(alpha = 0.3)
 plt.tight_layout()
 plt.savefig("outputs/01_portfolio_drawdown.png", dpi = 150, bbox_inches = "tight")

@@ -17,20 +17,20 @@ risk_free_rate = 0.03
 
 df, loc, scale = t.fit(port1_log_returns) # Fitting parameters of student-t distribution to data 
 
-var_95_t = t.ppf(0.05, df, loc, scale) # Var using the inverse CDF
-var_95_t_dollars = var_95_t * portfolio_value
+var_95_t = t.ppf(0.05, df, loc, scale) # Var using the inverse CDF (negative)
+var_95_t_dollars = abs(var_95_t * portfolio_value)   # positive loss in euros
 var_99_t = t.ppf(0.01, df, loc, scale)
-var_99_t_dollars = var_99_t * portfolio_value
+var_99_t_dollars = abs(var_99_t * portfolio_value)
 
 alpha_95 = 0.05
 t_alpha_95 = t.ppf(alpha_95, df)
-es_95_t = loc - scale * (t.pdf(t_alpha_95, df) / alpha_95) * ((df + t_alpha_95**2) / (df - 1)) # Expected shortfall formula 
-es_95_t_dollars = es_95_t * portfolio_value
+es_95_t = loc - scale * (t.pdf(t_alpha_95, df) / alpha_95) * ((df + t_alpha_95**2) / (df - 1)) # Expected shortfall formula (negative)
+es_95_t_dollars = abs(es_95_t * portfolio_value)
 
 alpha_99 = 0.01
 t_alpha_99 = t.ppf(alpha_99, df)
 es_99_t = loc - scale * (t.pdf(t_alpha_99, df) / alpha_99) * ((df + t_alpha_99**2) / (df - 1))
-es_99_t_dollars = es_99_t * portfolio_value
+es_99_t_dollars = abs(es_99_t * portfolio_value)
 
 
 comparison_results = []
@@ -50,10 +50,10 @@ for name in all_portfolio_log_returns.columns: # Repeating for all porfolio type
     comparison_results.append({
         "Portfolio": name,
         "DF": df_i,
-        "95% VaR": t_var_95,
-        "95% ES": t_es_95,
-        "99% VaR": t_var_99,
-        "99% ES": t_es_99,
+        "95% VaR (Loss)": abs(t_var_95),   # positive loss magnitude
+        "95% ES (Loss)": abs(t_es_95),
+        "99% VaR (Loss)": abs(t_var_99),
+        "99% ES (Loss)": abs(t_es_99),
         "VaR (€) 99%": abs(t_var_99 * portfolio_value),
         "ES (€) 99%": abs(t_es_99 * portfolio_value)
     })
@@ -61,7 +61,7 @@ for name in all_portfolio_log_returns.columns: # Repeating for all porfolio type
 df_compare = pd.DataFrame(comparison_results) # Data frame
 
 historical_metrics = pd.read_csv("data/02_historical_metrics.csv") # For comparison
-hist_var_95 = historical_metrics["95% VaR"].iloc[0]
+hist_var_95 = historical_metrics["95% VaR"].iloc[0]   
 hist_var_99 = historical_metrics["99% VaR"].iloc[0]
 hist_es_95 = historical_metrics["95% ES"].iloc[0]
 hist_es_99 = historical_metrics["99% ES"].iloc[0]
@@ -85,17 +85,17 @@ print(f"   Degrees of Freedom:            {df:>8.2f}")
 print(f"   Location (mu):                 {loc:>8.4%}")
 print(f"   Scale (sigma):                 {scale:<8.4%}")
 
-print(f"\n95% Student-t VaR:                {var_95_t:>8.2%}")
-print(f"99% Student-t VaR:                {var_99_t:>8.2%}")
-print(f"95% Student-t ES:                 {es_95_t:>8.2%}")
-print(f"99% Student-t ES:                 {es_99_t:>8.2%}\n")
+print(f"\n95% Student-t VaR (Loss):         {abs(var_95_t):>8.2%}")
+print(f"99% Student-t VaR (Loss):         {abs(var_99_t):>8.2%}")
+print(f"95% Student-t ES (Loss):          {abs(es_95_t):>8.2%}")
+print(f"99% Student-t ES (Loss):          {abs(es_99_t):>8.2%}\n")
 print("-" * 60)
 
 print(f"\n{'Metric':<20} {'Historical':>12} {'Normal':>12} {'Student-t':>12}\n")
-print(f"{'95% VaR':<20} {hist_var_95:>12.2%} {norm_var_95:>12.2%} {var_95_t:>12.2%}")
-print(f"{'99% VaR':<20} {hist_var_99:>12.2%} {norm_var_99:>12.2%} {var_99_t:>12.2%}")
-print(f"{'95% ES':<20} {hist_es_95:>12.2%} {norm_es_95:>12.2%} {es_95_t:>12.2%}")
-print(f"{'99% ES':<20} {hist_es_99:>12.2%} {norm_es_99:>12.2%} {es_99_t:>12.2%}")
+print(f"{'95% VaR (Loss)':<20} {abs(hist_var_95):>12.2%} {abs(norm_var_95):>12.2%} {abs(var_95_t):>12.2%}")
+print(f"{'99% VaR (Loss)':<20} {abs(hist_var_99):>12.2%} {abs(norm_var_99):>12.2%} {abs(var_99_t):>12.2%}")
+print(f"{'95% ES (Loss)':<20} {abs(hist_es_95):>12.2%} {abs(norm_es_95):>12.2%} {abs(es_95_t):>12.2%}")
+print(f"{'99% ES (Loss)':<20} {abs(hist_es_99):>12.2%} {abs(norm_es_99):>12.2%} {abs(es_99_t):>12.2%}")
 print("\n" + "-" * 60 + "\n")
 
 print(df_compare.round(4).to_string(index = False))
@@ -110,10 +110,10 @@ plt.figure(figsize = (10, 6)) # Plot 1: Showing Student-t distribution Var vs Hi
 plt.hist(port1_log_returns * 100, bins = 60, density = True, color = "blue", alpha = 0.7, edgecolor = "black", linewidth = 0.3)
 plt.fill_between(x, 0, y_t, color = "green", alpha = 0.15, label = "Student-t Density")
 plt.plot(x, y_t, color = "green", linewidth = 2, label = f"Student-t Fit (df={df:.1f})")
-plt.axvline(hist_var_95 * 100, color = "darkblue", linestyle = "-", linewidth = 2, label = f"Historical 95% VaR: {hist_var_95:.2%}")
-plt.axvline(hist_var_99 * 100, color = "blue", linestyle = "-", linewidth = 2, label = f"Historical 99% VaR: {hist_var_99:.2%}")
-plt.axvline(var_95_t * 100, color = "orange", linestyle = "--", linewidth = 2, label = f"Student-t 95% VaR: {var_95_t:.2%}")
-plt.axvline(var_99_t * 100, color = "red", linestyle = "--", linewidth = 2, label = f"Student-t 99% VaR: {var_99_t:.2%}")
+plt.axvline(hist_var_95 * 100, color = "darkblue", linestyle = "-", linewidth = 2, label = f"Historical 95% VaR Loss: {abs(hist_var_95):.2%}")
+plt.axvline(hist_var_99 * 100, color = "blue", linestyle = "-", linewidth = 2, label = f"Historical 99% VaR Loss: {abs(hist_var_99):.2%}")
+plt.axvline(var_95_t * 100, color = "orange", linestyle = "--", linewidth = 2, label = f"Student-t 95% VaR Loss: {abs(var_95_t):.2%}")
+plt.axvline(var_99_t * 100, color = "red", linestyle = "--", linewidth = 2, label = f"Student-t 99% VaR Loss: {abs(var_99_t):.2%}")
 plt.xlabel("Daily Log Return (%)", fontweight = "bold")
 plt.ylabel("Density", fontweight = "bold")
 plt.title("Equal Weight Portfolio: Historical vs Student-t Distribution VaR", fontsize = 14, fontweight = "bold")
@@ -127,10 +127,10 @@ plt.figure(figsize = (10, 6)) # Plot 2: Showing Student-t distribution ES vs His
 plt.hist(port1_log_returns * 100, bins = 60, density = True, color = "blue", alpha = 0.7, edgecolor = "black", linewidth = 0.3)
 plt.fill_between(x, 0, y_t, color = "purple", alpha = 0.15, label = "Student-t Density")
 plt.plot(x, y_t, color = "purple", linewidth = 2.5, label = f"Student-t Fit (df={df:.1f})")
-plt.axvline(hist_es_95 * 100, color = "darkblue", linestyle = "-", linewidth = 2, label = f"Historical 95% ES: {hist_es_95:.2%}")
-plt.axvline(hist_es_99 * 100, color = "blue", linestyle = "-", linewidth = 2, label = f"Historical 99% ES: {hist_es_99:.2%}")
-plt.axvline(es_95_t * 100, color = "orange", linestyle = "--", linewidth = 2, label = f"Student-t 95% ES: {es_95_t:.2%}")
-plt.axvline(es_99_t * 100, color = "red", linestyle = "--", linewidth = 2, label = f"Student-t 99% ES: {es_99_t:.2%}")
+plt.axvline(hist_es_95 * 100, color = "darkblue", linestyle = "-", linewidth = 2, label = f"Historical 95% ES Loss: {abs(hist_es_95):.2%}")
+plt.axvline(hist_es_99 * 100, color = "blue", linestyle = "-", linewidth = 2, label = f"Historical 99% ES Loss: {abs(hist_es_99):.2%}")
+plt.axvline(es_95_t * 100, color = "orange", linestyle = "--", linewidth = 2, label = f"Student-t 95% ES Loss: {abs(es_95_t):.2%}")
+plt.axvline(es_99_t * 100, color = "red", linestyle = "--", linewidth = 2, label = f"Student-t 99% ES Loss: {abs(es_99_t):.2%}")
 plt.xlabel("Daily Log Return (%)", fontweight = "bold")
 plt.ylabel("Density", fontweight = "bold")
 plt.title("Equal Weight Portfolio: Historical vs Student-t Expected Shortfall", fontsize = 14, fontweight = "bold")
@@ -142,9 +142,9 @@ plt.show()
 
 plt.figure(figsize = (10, 6)) # Plot 3: Bar Chart comparing all 3 models so far
 labels = ["95% VaR", "99% VaR", "95% ES", "99% ES"]
-historical_values = [hist_var_95 * 100, hist_var_99 * 100, hist_es_95 * 100, hist_es_99 * 100]
-normal_values = [norm_var_95 * 100, norm_var_99 * 100, norm_es_95 * 100, norm_es_99 * 100]
-t_values = [var_95_t * 100, var_99_t * 100, es_95_t * 100, es_99_t * 100]
+historical_values = [abs(hist_var_95) * 100, abs(hist_var_99) * 100, abs(hist_es_95) * 100, abs(hist_es_99) * 100]
+normal_values = [abs(norm_var_95) * 100, abs(norm_var_99) * 100, abs(norm_es_95) * 100, abs(norm_es_99) * 100]
+t_values = [abs(var_95_t) * 100, abs(var_99_t) * 100, abs(es_95_t) * 100, abs(es_99_t) * 100]
 x_pos = np.arange(len(labels))
 width = 0.25
 plt.bar(x_pos - width, historical_values, width, label = "Historical", color = "blue", alpha = 0.7)
@@ -169,5 +169,5 @@ results_df = pd.DataFrame({
     "99% ES": [es_99_t]
 })
 
-results_df.to_csv("data/04_student_t_metrics.csv", index = False) # Saving results 
-df_compare.to_csv("data/04_student_t_comparison.csv", index = False)
+results_df.to_csv("data/04_student_t_metrics.csv", index = False) # Saving results (negative raw values)
+df_compare.to_csv("data/04_student_t_comparison.csv", index = False)  # positive losses in comparison

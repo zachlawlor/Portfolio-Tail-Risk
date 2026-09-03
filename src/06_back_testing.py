@@ -1,9 +1,9 @@
-# Phase 06: Rolling Window Backtesting 
+# Phase 06: Expanding Window Backtesting 
 
 import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
-from scipy.stats import norm, t
+from scipy.stats import norm, t, chi2
 import os
 
 os.makedirs("outputs", exist_ok = True)
@@ -15,22 +15,30 @@ all_portfolio_log_returns = pd.read_csv("data/01_all_portfolio_log_returns.csv",
 portfolio_value = 100_000
 test_years = [2021, 2022, 2023, 2024, 2025] # These are the years we will test using data up to this year e.g 2022 backtest trains on 2016-2021 data
 
-def calculate_var(returns_series, method = "historical", alpha = 0.01): # This functions calclates var for a specified training period
- 
+def calculate_var(returns_series, method = "historical", alpha = 0.01):  # This functions calclates var for a specified training period
     if method == "historical": 
         return np.percentile(returns_series, alpha * 100)
-    
     elif method == "normal":
         mu = returns_series.mean()
         sigma = returns_series.std()
         return norm.ppf(alpha, mu, sigma)
-    
     elif method == "student_t":
         df, loc, scale = t.fit(returns_series)
         return t.ppf(alpha, df, loc, scale)
-    
     else:
         raise ValueError("Method must be 'historical', 'normal', or 'student_t'")
+
+def kupiec_test(breaches, total_days, confidence=0.99):# This is a likelihood ratio test - we accept if p value > 0.05 generally for 95% VaR
+
+    p = 1 - confidence
+    x = breaches
+    T = total_days
+    if x == 0 or x == T:
+        return np.nan
+    p_hat = x / T
+    LR = -2 * np.log( ((1-p)**(T-x) * p**x) / ((1-p_hat)**(T-x) * p_hat**x) ) # LR Test 
+    p_value = 1 - chi2.cdf(LR, df=1)
+    return p_value
 
 backtest_results = [] # Store the results of the backtest 
 
@@ -60,6 +68,13 @@ for year in test_years:
     expected_99 = len(test_data) * 0.01 # Expected number of breaches under both 95% and 99% VaR
     expected_95 = len(test_data) * 0.05
     
+    p_hist_99 = kupiec_test(hist_breaches_99, len(test_data), 0.99) # Kupiec p-values being calculated by function
+    p_norm_99 = kupiec_test(norm_breaches_99, len(test_data), 0.99)
+    p_t_99 = kupiec_test(t_breaches_99, len(test_data), 0.99)
+    p_hist_95 = kupiec_test(hist_breaches_95, len(test_data), 0.95)
+    p_norm_95 = kupiec_test(norm_breaches_95, len(test_data), 0.95)
+    p_t_95 = kupiec_test(t_breaches_95, len(test_data), 0.95)
+    
     backtest_results.append({ # Creates a dictionary to store results of the backtest for each year & loops
         "Year": year,
         "Days": len(test_data),
@@ -70,7 +85,13 @@ for year in test_years:
         "T 99": t_breaches_99,
         "Hist 95": hist_breaches_95,
         "Norm 95": norm_breaches_95,
-        "T 95": t_breaches_95
+        "T 95": t_breaches_95,
+        "Hist 99 p": p_hist_99,
+        "Norm 99 p": p_norm_99,
+        "T 99 p": p_t_99,
+        "Hist 95 p": p_hist_95,
+        "Norm 95 p": p_norm_95,
+        "T 95 p": p_t_95
     })
 
 df_backtest = pd.DataFrame(backtest_results)
@@ -103,7 +124,7 @@ for name in all_portfolio_log_returns.columns:
 df_all_backtest = pd.DataFrame(all_backtest_results)
 
 print("=" * 60) # Print Section
-print("Phase 06: Rolling Window Backtesting")
+print("Phase 06: Expanding Window Backtesting")
 print("=" * 60)
 print("\nTesting Period: 2021-2025")
 print("Training: All data before each test year")
@@ -115,9 +136,9 @@ for _, row in df_backtest.iterrows():
     days = int(row["Days"])
     print(f"\n{year} ({days} days)\n")
     print(f"99% VaR:")
-    print(f"Expected: {row['Expected 99%']:.1f} | Historical: {row['Hist 99']:.0f}, Normal: {row['Norm 99']:.0f}, Student-t: {row['T 99']:.0f}")
+    print(f"Expected: {row['Expected 99%']:.1f} | Historical: {row['Hist 99']:.0f} (p={row['Hist 99 p']:.3f}), Normal: {row['Norm 99']:.0f} (p={row['Norm 99 p']:.3f}), Student-t: {row['T 99']:.0f} (p={row['T 99 p']:.3f})")
     print(f"\n95% VaR:")
-    print(f"Expected: {row['Expected 95%']:.1f} | Historical: {row['Hist 95']:.0f}, Normal: {row['Norm 95']:.0f}, Student-t: {row['T 95']:.0f}")
+    print(f"Expected: {row['Expected 95%']:.1f} | Historical: {row['Hist 95']:.0f} (p={row['Hist 95 p']:.3f}), Normal: {row['Norm 95']:.0f} (p={row['Norm 95 p']:.3f}), Student-t: {row['T 95']:.0f} (p={row['T 95 p']:.3f})")
 
 print("\n" + "-" * 60 + "\n")
 pivot_hist = df_all_backtest.pivot(index = "Portfolio", columns = "Year", values = "Historical 99")
@@ -178,7 +199,6 @@ plt.tight_layout()
 plt.savefig("outputs/06_backtest_traffic_light.png", dpi = 150, bbox_inches = "tight")
 plt.show()
 
-
 plt.figure(figsize = (10, 6)) # Plot 3: 2022 Crisis comparison 
 df_2022 = df_all_backtest[df_all_backtest["Year"] == 2022]
 portfolios = df_2022["Portfolio"]
@@ -197,7 +217,6 @@ plt.grid(axis = "y", alpha = 0.3)
 plt.tight_layout()
 plt.savefig("outputs/06_backtest_2022_crisis.png", dpi = 150, bbox_inches = "tight")
 plt.show()
-
 
 plt.figure(figsize = (10, 6)) # Plot 4: 95% vs 99% VaR breach rate analysis for normal distribution 
 x_pos = np.arange(len(years))
