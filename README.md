@@ -125,7 +125,6 @@ Portfolio-Tail-Risk/
 
 ## Contact
 
-**Zach Lawlor**  
-Email: zach6lawlor@gmail.com
-LinkedIn: [zachlawlor](https://www.linkedin.com/in/zachlawlor)
-Github: [zachlawlor](https://github.com/zachlawlor)
+Email: zach6lawlor@gmail.com<br>
+LinkedIn: [zachlawlor](https://www.linkedin.com/in/zachlawlor)<br>
+Github: [zachlawlor](https://github.com/zachlawlor)<br>
