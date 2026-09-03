@@ -17,7 +17,7 @@ assets = {
 portfolios = {
     "Equal Weight":  {"VOO": 0.20, "EFA": 0.20, "TLT": 0.20, "AGG": 0.20, "GLD": 0.20}, # Will be using equal weight for main analysis - Port 1
     "Classic 60/40": {"VOO": 0.30, "EFA": 0.30, "TLT": 0.20, "AGG": 0.20, "GLD": 0.00}, # Port 2
-    "Risk Parity": {"VOO": 0.05, "EFA": 0.05, "TLT": 0.30, "AGG": 0.30, "GLD": 0.30}, # Port 3
+    "Defensive": {"VOO": 0.05, "EFA": 0.05, "TLT": 0.30, "AGG": 0.30, "GLD": 0.30}, # Port 3
     "Aggressive Growth": {"VOO": 0.40, "EFA": 0.40, "TLT": 0.10, "AGG": 0.10, "GLD": 0.00}, # Port 4
     "Conservative Income": {"VOO": 0.10, "EFA": 0.10, "TLT": 0.35, "AGG": 0.35, "GLD": 0.10}# Port 5
 } # Created 5 different portfolio types for analysis - note all sum up to equal 1
@@ -53,7 +53,8 @@ comparison_data = {}
 for name, weights in portfolios.items(): # Repeats same as above but loops through all 5 portfolios 
     port_ret = 0
     for asset in weights:
-        port_ret += log_returns[asset] * weights[asset]  
+        port_ret += np.exp(log_returns[asset]) * weights[asset]  
+    port_ret = np.log(port_ret)
     
     comp_annual_drift = port_ret.mean() * 252
     comp_vol = port_ret.std() * np.sqrt(252)
@@ -145,7 +146,8 @@ plt.figure(figsize=(10, 6)) # Plot 4 showing all the portfolios types growth ove
 for name, weights in portfolios.items():
     port_ret = 0
     for asset in weights:
-        port_ret += log_returns[asset] * weights[asset]  
+        port_ret += np.exp(log_returns[asset]) * weights[asset]  
+    port_ret = np.log(port_ret)
     all_cumulative = np.exp(port_ret.cumsum()) 
     plt.plot(all_cumulative.index, all_cumulative, linewidth = 1.5, label = name)
 plt.axhline(y = 1, color = "gray", linestyle = "--", alpha = 0.5)

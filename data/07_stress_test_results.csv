@@ -9,11 +9,11 @@ Classic 60/40,Geopolitical,8500.0,0.08499999999999999
 Classic 60/40,Stagflation,19500.0,0.195
 Classic 60/40,Solvency II,31000.0,0.31
 Classic 60/40,Tech Bubble,20999.999999999996,0.20999999999999996
-Risk Parity,2008 Crisis,-9249.999999999998,-0.09249999999999999
-Risk Parity,Geopolitical,-10250.0,-0.1025
-Risk Parity,Stagflation,750.0000000000007,0.007500000000000007
-Risk Parity,Solvency II,19000.0,0.19
-Risk Parity,Tech Bubble,2500.0,0.025
+Defensive,2008 Crisis,-9249.999999999998,-0.09249999999999999
+Defensive,Geopolitical,-10250.0,-0.1025
+Defensive,Stagflation,750.0000000000007,0.007500000000000007
+Defensive,Solvency II,19000.0,0.19
+Defensive,Tech Bubble,2500.0,0.025
 Aggressive Growth,2008 Crisis,32000.000000000007,0.32000000000000006
 Aggressive Growth,Geopolitical,13000.0,0.13
 Aggressive Growth,Stagflation,21000.000000000004,0.21000000000000002

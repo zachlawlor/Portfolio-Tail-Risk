@@ -9,7 +9,7 @@ import os
 portfolio_types = {
     "Equal Weight": {"VOO": 0.20, "EFA": 0.20, "TLT": 0.20, "AGG": 0.20, "GLD": 0.20},
     "Classic 60/40": {"VOO": 0.30, "EFA": 0.30, "TLT": 0.20, "AGG": 0.20, "GLD": 0.00},
-    "Risk Parity": {"VOO": 0.05, "EFA": 0.05, "TLT": 0.30, "AGG": 0.30, "GLD": 0.30},
+    "Defensive": {"VOO": 0.05, "EFA": 0.05, "TLT": 0.30, "AGG": 0.30, "GLD": 0.30},
     "Aggressive Growth": {"VOO": 0.40, "EFA": 0.40, "TLT": 0.10, "AGG": 0.10, "GLD": 0.00},
     "Conservative Income": {"VOO": 0.10, "EFA": 0.10, "TLT": 0.35, "AGG": 0.35, "GLD": 0.10}
 }
@@ -50,7 +50,7 @@ for port_name, weights in portfolio_types.items():
 df_results = pd.DataFrame(stress_results)
 
 print("=" * 60) # Print Section
-print("Phase 07: Multi‑Scenario Stress Testing")
+print("Phase 07: Multi-Scenario Stress Testing")
 print("=" * 60)
 print(f"\nNotional Value: €{initial_value:,}")
 print(f"Stress Date: {last_prices.name.strftime('%Y-%m-%d')}")
@@ -63,8 +63,8 @@ for name, shocks in stress_scenarios.items():
     print(f"\n{name}:", ", ".join([f"{k}: {v:+.0%}" for k, v in shocks.items()]))
 
 print("\n" + "-" * 60)
-pivot_loss = df_results.pivot(index="Portfolio", columns="Scenario", values="Loss %")
-pivot_loss_euros = df_results.pivot(index="Portfolio", columns="Scenario", values="Loss (€)")
+pivot_loss = df_results.pivot(index = "Portfolio", columns = "Scenario", values = "Loss %")
+pivot_loss_euros = df_results.pivot(index = "Portfolio", columns = "Scenario", values = "Loss (€)")
 print("\nLoss Percentage by Portfolio and Scenario\n")
 print(pivot_loss.round(4).to_string())
 print("\nLoss in Euros by Portfolio and Scenario\n")
@@ -80,47 +80,47 @@ print("\n" + "-" * 60)
 
 plt.style.use("seaborn-v0_8") # Plot Style
 
-plt.figure(figsize=(12, 6)) # Plot 1: heatmap using seaborn of losses by scenario 
-sns.heatmap(pivot_loss * 100, annot=True, fmt=".1f", cmap="Reds",
-            linewidths=0.5, cbar_kws={'label': 'Loss (%)'})
-plt.title("Portfolio Stress Test: Loss Percentage by Scenario", fontsize=14, fontweight="bold")
-plt.xlabel("Scenario", fontweight="bold")
-plt.ylabel("Portfolio", fontweight="bold")
+plt.figure(figsize = (12, 6)) # Plot 1: heatmap using seaborn of losses by scenario 
+sns.heatmap(pivot_loss * 100, annot = True, fmt = ".1f", cmap = "Reds",
+            linewidths = 0.5, cbar_kws = {'label': 'Loss (%)'})
+plt.title("Portfolio Stress Test: Loss Percentage by Scenario", fontsize = 14, fontweight = "bold")
+plt.xlabel("Scenario", fontweight = "bold")
+plt.ylabel("Portfolio", fontweight = "bold")
 plt.tight_layout()
-plt.savefig("outputs/07_stress_heatmap.png", dpi=150, bbox_inches="tight")
+plt.savefig("outputs/07_stress_heatmap.png", dpi = 150, bbox_inches = "tight")
 plt.show()
 
-eq_weight = df_results[df_results["Portfolio"] == "Equal Weight"].sort_values("Loss %", ascending=False) # Filtering to only include equal weight portfolio
-plt.figure(figsize=(10, 6)) # Plot 2: Bar chart of Equal weight port by scenario 
+eq_weight = df_results[df_results["Portfolio"] == "Equal Weight"].sort_values("Loss %", ascending = False) # Filtering to only include equal weight portfolio
+plt.figure(figsize = (10, 6)) # Plot 2: Bar chart of Equal weight port by scenario 
 colors = ['darkred' if x > 0.20 else 'red' if x > 0.10 else 'orange' for x in eq_weight["Loss %"]]
-bars = plt.bar(eq_weight["Scenario"], eq_weight["Loss %"] * 100, color=colors, alpha=0.7, edgecolor="black")
-plt.axhline(0, color="black", linewidth=0.8)
-plt.ylabel("Loss (%)", fontweight="bold")
-plt.title("Equal Weight Portfolio: Loss by Scenario", fontsize=14, fontweight="bold")
-plt.xticks(rotation=0, fontweight="bold")
-plt.grid(axis="y", alpha=0.3)
+bars = plt.bar(eq_weight["Scenario"], eq_weight["Loss %"] * 100, color = colors, alpha = 0.7, edgecolor = "black")
+plt.axhline(0, color = "black", linewidth = 0.8)
+plt.ylabel("Loss (%)", fontweight = "bold")
+plt.title("Equal Weight Portfolio: Loss by Scenario", fontsize = 14, fontweight = "bold")
+plt.xticks(rotation = 0, fontweight = "bold")
+plt.grid(axis = "y", alpha = 0.3)
 for bar, loss in zip(bars, eq_weight["Loss %"]):
     plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5,
-             f'{loss:.1%}', ha='center', va='bottom', fontsize=10, fontweight='bold')
+             f'{loss:.1%}', ha = 'center', va = 'bottom', fontsize = 10, fontweight = 'bold')
 plt.tight_layout()
-plt.savefig("outputs/07_stress_equal_weight.png", dpi=150, bbox_inches="tight")
+plt.savefig("outputs/07_stress_equal_weight.png", dpi = 150, bbox_inches = "tight")
 plt.show()
 
-plt.figure(figsize=(10, 6)) # Plot 3: Showing loss percentage across all portfolios
+plt.figure(figsize = (10, 6)) # Plot 3: Showing loss percentage across all portfolios
 plot_data = pivot_loss.T * 100  # Transpose so scenarios are rows, portfolios are columns
 colors = ["blue", "green", "orange", "red", "purple"]
 for i, portfolio in enumerate(plot_data.columns):
     plt.plot(plot_data.index, plot_data[portfolio], 
-             marker='o', linewidth=2.5, markersize=8,
-             color=colors[i], label=portfolio)
-plt.axhline(y=0, color="black", linewidth=0.8, linestyle="-")
-plt.ylabel("Loss (%)", fontweight="bold")
-plt.xlabel("Scenario", fontweight="bold")
-plt.title("Stress Test: Loss Percentage Across All Portfolios", fontsize=14, fontweight="bold")
-plt.legend(loc="best")
-plt.grid(axis="y", alpha=0.3)
+             marker = 'o', linewidth = 2.5, markersize = 8,
+             color = colors[i], label = portfolio)
+plt.axhline(y = 0, color = "black", linewidth = 0.8, linestyle = "-")
+plt.ylabel("Loss (%)", fontweight = "bold")
+plt.xlabel("Scenario", fontweight = "bold")
+plt.title("Stress Test: Loss Percentage Across All Portfolios", fontsize = 14, fontweight = "bold")
+plt.legend(loc = "best")
+plt.grid(axis = "y", alpha = 0.3)
 plt.tight_layout()
-plt.savefig("outputs/07_stress_line_graph.png", dpi=150, bbox_inches="tight")
+plt.savefig("outputs/07_stress_line_graph.png", dpi = 150, bbox_inches = "tight")
 plt.show()
 
 print("Correlation Heatmaps\n")
@@ -129,18 +129,18 @@ full_corr = log_returns.corr() # Finds correlation between log returns
 pre_2022 = log_returns[log_returns.index.year < 2022].corr() # Pre 2022 correlation
 crisis_2022 = log_returns[log_returns.index.year == 2022].corr() # 2022 correlation
 
-fig, axes = plt.subplots(1, 3, figsize=(18, 5)) # Plot 4: Heat Map of all 3 correlation maps
-sns.heatmap(full_corr, annot=True, fmt=".2f", cmap="RdBu_r", center=0,
-            linewidths=0.5, ax=axes[0], cbar_kws={'label': 'Correlation'})
-axes[0].set_title("Full Period (2016-2025)", fontsize=14, fontweight="bold")
-sns.heatmap(pre_2022, annot=True, fmt=".2f", cmap="RdBu_r", center=0,
-            linewidths=0.5, ax=axes[1], cbar_kws={'label': 'Correlation'})
-axes[1].set_title("Pre-2022 (Pre Crisis)", fontsize=14, fontweight="bold")
-sns.heatmap(crisis_2022, annot=True, fmt=".2f", cmap="RdBu_r", center=0,
-            linewidths=0.5, ax=axes[2], cbar_kws={'label': 'Correlation'})
-axes[2].set_title("2022 (Crisis)", fontsize=14, fontweight="bold")
+fig, axes = plt.subplots(1, 3, figsize = (18, 5)) # Plot 4: Heat Map of all 3 correlation maps
+sns.heatmap(full_corr, annot = True, fmt = ".2f", cmap = "RdBu_r", center = 0,
+            linewidths = 0.5, ax = axes[0], cbar_kws = {'label': 'Correlation'})
+axes[0].set_title("Full Period (2016-2025)", fontsize = 14, fontweight = "bold")
+sns.heatmap(pre_2022, annot = True, fmt = ".2f", cmap = "RdBu_r", center = 0,
+            linewidths = 0.5, ax = axes[1], cbar_kws = {'label': 'Correlation'})
+axes[1].set_title("Pre-2022 (Pre Crisis)", fontsize = 14, fontweight = "bold")
+sns.heatmap(crisis_2022, annot = True, fmt = ".2f", cmap = "RdBu_r", center = 0,
+            linewidths = 0.5, ax = axes[2], cbar_kws = {'label': 'Correlation'})
+axes[2].set_title("2022 (Crisis)", fontsize = 14, fontweight = "bold")
 plt.tight_layout()
-plt.savefig("outputs/07_correlation_heatmaps.png", dpi=150, bbox_inches="tight")
+plt.savefig("outputs/07_correlation_heatmaps.png", dpi = 150, bbox_inches = "tight")
 plt.show()
 
 voo_tlt_pre = pre_2022.loc["VOO", "TLT"]
@@ -158,6 +158,6 @@ else:
 
 print("\n" + "-" * 60)
 
-df_results.to_csv("data/07_stress_test_results.csv", index=False) # Save results 
+df_results.to_csv("data/07_stress_test_results.csv", index = False) # Save results 
 pivot_loss.to_csv("data/07_stress_loss_pivot.csv")
 pivot_loss_euros.to_csv("data/07_stress_loss_euros_pivot.csv")
