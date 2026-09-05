@@ -161,3 +161,5 @@ print("\n" + "-" * 60)
 df_results.to_csv("data/07_stress_test_results.csv", index = False) # Save results 
 pivot_loss.to_csv("data/07_stress_loss_pivot.csv")
 pivot_loss_euros.to_csv("data/07_stress_loss_euros_pivot.csv")
+
+

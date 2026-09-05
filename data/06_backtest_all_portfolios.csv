@@ -4,10 +4,10 @@ Equal Weight,2022,251,10,19,2
 Equal Weight,2023,250,2,3,0
 Equal Weight,2024,252,3,4,0
 Equal Weight,2025,249,2,5,1
-Classic 60/40,2021,252,0,2,0
-Classic 60/40,2022,251,7,14,3
+Classic 60/40,2021,252,0,2,2
+Classic 60/40,2022,251,7,14,9
 Classic 60/40,2023,250,0,1,0
-Classic 60/40,2024,252,1,1,1
+Classic 60/40,2024,252,1,1,0
 Classic 60/40,2025,249,4,4,3
 Defensive,2021,252,4,6,3
 Defensive,2022,251,15,17,1
@@ -22,5 +22,5 @@ Aggressive Growth,2025,249,3,3,3
 Conservative Income,2021,252,5,5,3
 Conservative Income,2022,251,28,28,25
 Conservative Income,2023,250,6,11,6
-Conservative Income,2024,252,5,6,0
+Conservative Income,2024,252,5,6,5
 Conservative Income,2025,249,2,2,0
