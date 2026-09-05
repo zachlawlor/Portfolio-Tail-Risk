@@ -72,7 +72,7 @@ Processed data and analysis outputs are included in the `data/` directory.
 Clone the repository and install the required dependencies:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/zachlawlor/Portfolio-Tail-Risk.git
 cd Portfolio-Tail-Risk
 pip install -r requirements.txt
 ```
