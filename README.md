@@ -1,4 +1,4 @@
-# Portfolio Tail-Risk Analytics
+# Portfolio Tail Risk Analytics
 
 A quantitative finance & actuarial science project investigating **how different risk models measure portfolio tail risk and how accurately they predict extreme losses**.
 
